@@ -14,9 +14,9 @@ spec:
     }
 
     environment {
-        REGISTRY = "numanepa.azurecr.io"
-        IMAGE_NAME = "epa/nsoh"
-        IMAGE_TAG = "${BUILD_NUMBER}"
+        REGISTRY = numanepa.azurecr.io
+        IMAGE_NAME = epa/nsoh
+        IMAGE_TAG = ${BUILD_NUMBER}
     }
 
     stages {
