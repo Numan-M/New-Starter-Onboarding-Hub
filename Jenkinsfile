@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        docker {image 'docker:cli'}
+    }
     environment {
         REGISTRY = "numanepa.azurecr.io"
         IMAGE_NAME = "epa/nsoh"
