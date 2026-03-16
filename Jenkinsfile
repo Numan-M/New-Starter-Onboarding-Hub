@@ -1,5 +1,19 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest
+    command:
+    - cat
+    tty: true
+"""
+        }
+    }
 
     environment {
         REGISTRY = "numanepa.azurecr.io"
@@ -15,19 +29,17 @@ pipeline {
             }
         }
 
-        stage('Build with Kaniko') {
+        stage('Build & Push Image') {
             steps {
-                sh """
-                docker run --rm \
-                  -v \$(pwd):/workspace \
-                  -v /kaniko/.docker:/kaniko/.docker \
-                  gcr.io/kaniko-project/executor:latest \
-                  --dockerfile /workspace/Dockerfile \
-                  --context /workspace \
-                  --destination $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
-                """
+                container('kaniko') {
+                    sh """
+                    /kaniko/executor \
+                      --context `pwd` \
+                      --dockerfile `pwd`/Dockerfile \
+                      --destination $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+                    """
+                }
             }
         }
-
     }
 }
