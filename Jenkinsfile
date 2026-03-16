@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         REGISTRY = "numanepa.azurecr.io"
+        ACR_NAME = "NumanEPA"
         IMAGE_NAME = "epa/nsoh"
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
@@ -14,7 +15,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh """
-                docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG .
+                az acr build --registry ${ACR_NAME} --image ${IMAGE_NAME}:${IMAGE_TAG} .
                 """
             }
         }
