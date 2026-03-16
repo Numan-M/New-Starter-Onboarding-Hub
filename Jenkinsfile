@@ -15,7 +15,6 @@ pipeline {
         stage('Build') {
             steps {
                 sh """
-                az --version
                 az acr build --registry ${ACR_NAME} --image ${IMAGE_NAME}:${IMAGE_TAG} .
                 """
             }
