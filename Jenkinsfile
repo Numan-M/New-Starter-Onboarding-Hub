@@ -27,6 +27,7 @@ spec:
         AZURE_SUBSCRIPTION_ID = credentials('azure-subscription-id')
         REGISTRY = "numanepa.azurecr.io"
         ACR_NAME = "NumanEPA"
+        ACR_RG = "NumanEPA"
         IMAGE_NAME = "epa/nsoh"
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
@@ -48,7 +49,7 @@ spec:
     stage('Build and Push Docker Image') {
         steps {
             container('azure-cli') {
-                sh 'az acr build --registry ${ACR_NAME} --image ${IMAGE_NAME}:${IMAGE_TAG} --file Dockerfile .' 
+                sh "az acr build --registry ${ACR_NAME} --resource-group ${ACR_RG} --image ${IMAGE_NAME}:${IMAGE_TAG} --file Dockerfile ." 
                 }
             }
         }
