@@ -40,15 +40,38 @@ spec:
             steps {
                 container('azure-cli') {
                     sh """
-                        az login --identity"""
-                       // az account set --subscription ${AZURE_SUBSCRIPTION_ID}
-                      //  az account show
-                    
-                
+                        az login --identity
+                        az account set --subscription ${AZURE_SUBSCRIPTION_ID}
+                        az account show"""
+                }
+
             }
         }
+    //     stage('Build and Push Docker Image') {
+    //         steps {
+    //             container('azure-cli') {
+    //                 // sh """
+    //                 //    az acr build --registry ${ACR_NAME} --image ${IMAGE_NAME}:${IMAGE_TAG} --file Dockerfile . """
+                    
+                
+    //             }
+    //         }
+    //     }
+    //     stage('Deploy to AKS') {
+    //         steps {
+    //             container('azure-cli') {
+    //                 // sh """
+    //                 //     az login --identity"""
+    //                 //    az account set --subscription ${AZURE_SUBSCRIPTION_ID}
+    //                 //    az account show
+    //                 //   az acr build --registry ${ACR_NAME} --image ${IMAGE_NAME}:${IMAGE_TAG} --file Dockerfile .
+                    
+                
+    //         }
+    //     }
         
+    // }
+    
     }
-}
 }
 
