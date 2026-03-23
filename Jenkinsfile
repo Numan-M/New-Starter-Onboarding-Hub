@@ -37,9 +37,11 @@ spec:
         }
         stage('Build') {
             steps {
-                sh """
-                az --version
-                """
+                container('azure-cli') {
+                    sh """
+                    az --version
+                    """
+                
             }
         }
         
