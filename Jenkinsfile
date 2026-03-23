@@ -1,5 +1,28 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            yaml '''
+apiVersion: v1
+kind: Pod
+metadata:
+    labels:
+        jenkins: agent
+spec:
+    serviceAccountName: default
+    containers:
+    - name: azure-cli
+      image: mcr.microsoft.com/azure-cli:latest
+      command:
+      - cat
+      tty: true
+    - name: kubectl
+      image: bitnami/kubectl:latest
+      command:
+      - cat
+      tty: true
+'''
+        }
+    }
     environment {
         REGISTRY = "numanepa.azurecr.io"
         ACR_NAME = "NumanEPA"
@@ -15,7 +38,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh """
-                az acr build --registry ${ACR_NAME} --image ${IMAGE_NAME}:${IMAGE_TAG} .
+                az --version
                 """
             }
         }
