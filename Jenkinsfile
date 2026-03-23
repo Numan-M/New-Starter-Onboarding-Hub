@@ -24,6 +24,7 @@ spec:
         }
     }
     environment {
+        AZURE_SUBSCRIPTION_ID = credentials('AZURE_SUBSCRIPTION_ID')
         REGISTRY = "numanepa.azurecr.io"
         ACR_NAME = "NumanEPA"
         IMAGE_NAME = "epa/nsoh"
@@ -35,12 +36,14 @@ spec:
                 checkout scm
             }
         }
-        stage('Build') {
+        stage('Log in to Azure') {
             steps {
                 container('azure-cli') {
                     sh """
-                    az --version
-                    """
+                        az login --identity"""
+                       // az account set --subscription ${AZURE_SUBSCRIPTION_ID}
+                      //  az account show
+                    
                 
             }
         }
