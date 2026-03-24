@@ -39,7 +39,7 @@ pipeline {
                 checkout scm
             }
         }
-    }
+    
 
     stage('Log in to Azure') {
         steps {
