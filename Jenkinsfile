@@ -34,38 +34,39 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
+            stage('Checkout') {
+                steps {
+                    checkout scm
+                }
             }
-        }
     
 
-    stage('Log in to Azure') {
-        steps {
-            container('azure-cli') {
-                    sh 'az login --identity'
-                    sh 'az account set --subscription $AZURE_SUBSCRIPTION_ID'
-                    sh 'az account show'
+        stage('Log in to Azure') {
+            steps {
+                container('azure-cli') {
+                        sh 'az login --identity'
+                        sh 'az account set --subscription $AZURE_SUBSCRIPTION_ID'
+                        sh 'az account show'
+                }
             }
         }
-    }
 
-    stage('Build and Push Docker Image') {
-        steps {
-            container('azure-cli') {
-                sh "az acr build --registry ${ACR_NAME} --resource-group ${RG_NAME} --image ${IMAGE_NAME}:${IMAGE_TAG} --file Dockerfile ." 
+        stage('Build and Push Docker Image') {
+            steps {
+                container('azure-cli') {
+                    sh "az acr build --registry ${ACR_NAME} --resource-group ${RG_NAME} --image ${IMAGE_NAME}:${IMAGE_TAG} --file Dockerfile ." 
+                }
             }
         }
-    }
 
-    stage('Deploy to AKS') {
-        steps {
-            container('azure-cli') {
-                sh "az aks get-credentials --resource-group ${RG_NAME} --name ${AKS_CLUSTER_NAME}"
-                sh "kubectl set image deployment/nsoh-dev nsoh=${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -n nsoh-dev"
+        stage('Deploy to AKS') {
+            steps {
+                container('azure-cli') {
+                    sh "az aks get-credentials --resource-group ${RG_NAME} --name ${AKS_CLUSTER_NAME}"
+                    sh "kubectl set image deployment/nsoh-dev nsoh=${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -n nsoh-dev"
+                }
             }
         }
-    }
         
+    }
 }
