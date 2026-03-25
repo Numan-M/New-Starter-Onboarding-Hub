@@ -15,7 +15,7 @@ ENV FLASK_APP=app
 ENV FLASK_RUN_HOST=0.0.0.0
 
 # expose port
-EXPOSE 5000
+EXPOSE 80
 
 # default command
 CMD ["python", "nsoh.py"]
