@@ -1,7 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            yaml '''
+        yaml '''
 apiVersion: v1
 kind: Pod
 metadata:
@@ -10,13 +10,8 @@ metadata:
 spec:
     serviceAccountName: default
     containers:
-    - name: azure-cli
-      image: mcr.microsoft.com/azure-cli:latest
-      command:
-      - cat
-      tty: true
-    - name: kubectl
-      image: bitnami/kubectl:latest
+    - name: azure-kubectl
+      image: numanepa.azurecr.io/tools/azure-kubectl:latest
       command:
       - cat
       tty: true
@@ -62,12 +57,9 @@ spec:
         stage('Deploy to AKS') {
             steps {
                 container('azure-cli') {
-                    sh "az aks get-credentials --resource-group ${RG_NAME} --name ${AKS_CLUSTER_NAME} --file /home/jenkins/agent/kubeconfig"  
-                }
-                container('kubectl') {
-                    sh "export KUBECONFIG=/home/jenkins/agent/kubeconfig"
-                    sh "kubectl set image deployment/nsoh-dev nsoh=${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -n nsoh-dev"
-                }
+                    sh "az aks get-credentials --resource-group ${RG_NAME} --name ${AKS_CLUSTER_NAME} --file /home/jenkins/agent/kubeconfig"
+                    sh "kubectl set image deployment/nsoh-dev nsoh=${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -n nsoh-dev"  
+                }            
             }
         }
         
