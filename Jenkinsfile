@@ -38,7 +38,7 @@ spec:
 
         stage('Log in to Azure') {
             steps {
-                container('azure-cli') {
+                container('azure-kubectl') {
                         sh 'az login --identity'
                         sh 'az account set --subscription $AZURE_SUBSCRIPTION_ID'
                         sh 'az account show'
@@ -48,7 +48,7 @@ spec:
 
         stage('Build and Push Docker Image') {
             steps {
-                container('azure-cli') {
+                container('azure-kubectl') {
                     sh "az acr build --registry ${ACR_NAME} --resource-group ${RG_NAME} --image ${IMAGE_NAME}:${IMAGE_TAG} --file Dockerfile ." 
                 }
             }
@@ -56,8 +56,8 @@ spec:
 
         stage('Deploy to AKS') {
             steps {
-                container('azure-cli') {
-                    sh "az aks get-credentials --resource-group ${RG_NAME} --name ${AKS_CLUSTER_NAME} --file /home/jenkins/agent/kubeconfig"
+                container('azure-kubectl') {
+                    sh "az aks get-credentials --resource-group ${RG_NAME} --name ${AKS_CLUSTER_NAME}"
                     sh "kubectl set image deployment/nsoh-dev nsoh=${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -n nsoh-dev"  
                 }            
             }
