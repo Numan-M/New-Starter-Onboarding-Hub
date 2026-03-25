@@ -1,5 +1,5 @@
-# Python base image
-FROM python:3.11-slim
+# Python base image - pull rate limit workaround
+FROM numanepa.azurecr.io/python:3.11-slim
 
 # set working directory
 WORKDIR /app
