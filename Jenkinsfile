@@ -41,7 +41,6 @@ spec:
                 container('azure-kubectl') {
                         sh 'az login --identity'
                         sh 'az account set --subscription $AZURE_SUBSCRIPTION_ID'
-                        sh 'az account show'
                 }
             }
         }
