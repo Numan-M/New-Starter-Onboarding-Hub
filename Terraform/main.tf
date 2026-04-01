@@ -25,36 +25,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                = "nsoh-acr"
+  name                = "nsohacr"
   resource_group_name = var.resource_group_name
   location            = var.location
   sku                 = "Basic"
 }
-
-# resource "azurerm_role_assignment" "acr_pull" {
-#   scope                = azurerm_container_registry.acr.id
-#   role_definition_name = "AcrPull"
-#   principal_id         = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
-# }
-
-# resource "azurerm_role_assignment" "acr_push" {
-#   scope                            = azurerm_container_registry.acr.id
-#   role_definition_name             = "AcrPush"
-#   principal_id                     = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
-#   skip_service_principal_aad_check = true
-# }
-
-# resource "azurerm_role_assignment" "acr_tasks_contributor" {
-#   scope                = azurerm_container_registry.acr.id
-#   role_definition_name = "Container Registry Tasks Contributor"
-#   principal_id         = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
-# }
-
-# resource "azurerm_role_assignment" "reader" {
-#   scope                = azurerm_container_registry.acr.id
-#   role_definition_name = "Reader"
-#   principal_id         = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
-# }
 
 output "client_certificate" {
   value     = azurerm_kubernetes_cluster.aks.kube_config[0].client_certificate
