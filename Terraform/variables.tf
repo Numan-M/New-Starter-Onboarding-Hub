@@ -14,3 +14,4 @@ variable "Subscription_id" {
   sensitive   = true
 }
 
+
