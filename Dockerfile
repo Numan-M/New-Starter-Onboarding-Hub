@@ -18,4 +18,4 @@ ENV FLASK_RUN_HOST=0.0.0.0
 EXPOSE 80
 
 # default command
-CMD ["python", "nsoh.py"]
+CMD ["python", "app.py"]
