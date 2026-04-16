@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Onboarding Hub</title>
+    <style>
+        body { font-family: Arial; margin: 0; display: flex; }
+        .sidebar {
+            width: 250px;
+            background: #ffffff;
+            color: 
+#2a4386;
+            height: 100vh;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 26px;
+        }
+        .sidebar-logo {
+            height: 30px;
+        }
+        .sidebar-title {
+            font-size: 18px;
+            padding-top: 4px;
+            font-weight: bold;
+        }
+        .sidebar ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar li { margin: 8px 0; }
+        .sidebar a {
+            color: 
+#2a4386;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            padding: 6px 8px;
+            border-radius: 6px;
+        }
+        .sidebar a:hover {
+            font-weight: bold;
+        }
+        .active {
+            background: #2a42860f;
+            font-weight: bold;
+        }
+        .subheading {
+            margin-top: 20px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        .main {
+            flex: 1;
+            padding: 30px;
+            background: 
+#f9fafb;
+        }
+        .complete-btn {
+            background: 
+#2a4386;
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .complete-btn:hover {
+            opacity: 0.9;
+        }
+        .undo-btn {
+            background: #ccc;
+            color: #333;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 8px;
+            margin-left: 10px;
+        }
+        
+        .undo-btn:hover {
+            opacity: 0.9;
+        }
+        .checkmark {
+            height: 10px;
+            opacity: 0.4;
+            margin-left: 5px; /* Adjust based on padding */
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <!-- HEADER -->
+    <div class="sidebar-header">
+        <img src="{{ url_for('static', filename='logo.png') }}" class="sidebar-logo">
+        <div class="sidebar-title">| Onboarding Hub</div>
+    </div>
+    <!-- GENERAL -->
+    <div class="subheading">General</div>
+    <ul>
+        {% for section in sections %}
+            <li>
+                <a href="/general/{{ section }}" class="{% if section == current_item %}active{% endif %}">
+                    {{ section }}
+                    {% if section in completed %}  <img src="{{ url_for('static', filename='select.png') }}" class="checkmark"> {% endif %}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+    <!-- ACCESS -->
+    <div class="subheading">Access</div>
+    <ul>
+        {% for tool in access_sections %}
+            <li>
+                <a href="/access/{{ tool }}" class="{% if tool == current_item %}active{% endif %}">
+                    {{ tool }}
+                    {% if tool in completed %} <img src="{{ url_for('static', filename='select.png') }}" class="checkmark"> {% endif %}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+<div class="main">
+    <h1>{{ current_item }}</h1>
+    <p>{{ content }}</p>
+    {% if current_item not in completed %}
+        <a href="/complete/{{ current_item }}">
+            <button class="complete-btn">Mark Complete</button>
+        </a>
+    {% else %}
+        <a href="/undo/{{ current_item }}">
+           <button class="undo-btn">Undo</button>
+        </a>
+    {% endif %}
+</div>
+    
+</div>
+</body>
+</html>
