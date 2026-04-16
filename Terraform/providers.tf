@@ -11,4 +11,3 @@ provider "azurerm" {
   features {}
   subscription_id = var.Subscription_id
 }
-
