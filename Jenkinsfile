@@ -25,7 +25,7 @@ spec:
         RG_NAME = "NumanEPA"
         IMAGE_NAME = "epa/nsoh"
         AKS_CLUSTER_NAME = "Jenkins-NM"
-        IMAGE_TAG = "${BUILD_NUMBER}"
+        IMAGE_TAG = "dev.${BUILD_NUMBER}"
     }
 
     stages {
