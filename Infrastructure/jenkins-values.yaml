@@ -1,0 +1,18 @@
+controller:
+  serviceType: LoadBalancer
+
+
+  image:
+    registry: "numanepa.azurecr.io"
+    repository: "jenkins-controller"
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+
+  # no plugin install at runtimne
+  installPlugins: []
+  installLatestPlugins: false
+  installLatestSpecifiedPlugins: false
+
+  persistence:
+    enabled: true
