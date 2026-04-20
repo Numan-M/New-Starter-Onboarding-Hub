@@ -1,0 +1,11 @@
+Terraform/
+kubernetes/
+Infrastructure/
+.git
+/k8s
+.pytest_cache__
+.dockerignore
+Dockerfile
+Jenkinsfile
+README.md
+test_app.py
