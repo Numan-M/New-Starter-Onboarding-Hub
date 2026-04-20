@@ -57,7 +57,7 @@ spec:
             steps {
                 container('azure-kubectl') {
                     sh "az aks get-credentials --resource-group ${RG_NAME} --name ${AKS_CLUSTER_NAME}"
-                    sh "kubectl set image deployment/nsoh-dev nsoh=${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -n nsoh-dev"  
+                    sh "kubectl set image deployment/nsoh-dev nsoh-dev=${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -n nsoh-dev"  
                 }            
             }
         }
