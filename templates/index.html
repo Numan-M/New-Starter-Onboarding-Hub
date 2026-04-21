@@ -3,15 +3,18 @@
 <head>
     <title>Onboarding Hub</title>
     <style>
-        body { font-family: Arial; margin: 0; display: flex; }
+        body { font-family: sans-serif; margin: 0; display: flex; }
         .sidebar {
-            width: 250px;
+            width: 275px;
             background: #ffffff;
-            color: 
-#2a4386;
+            color: #2a4386;
             height: 100vh;
             padding: 20px;
             overflow-y: auto;
+            position: fixed;
+            top: 0;
+            left: 0;
+            box-sizing: border-box;
         }
         .sidebar-header {
             display: flex;
@@ -30,8 +33,7 @@
         .sidebar ul { list-style: none; padding: 0; margin: 0; }
         .sidebar li { margin: 8px 0; }
         .sidebar a {
-            color: 
-#2a4386;
+            color: #2a4386;
             text-decoration: none;
             font-size: 14px;
             display: block;
@@ -52,14 +54,15 @@
             opacity: 0.7;
         }
         .main {
-            flex: 1;
+            margin-left: 280px;
             padding: 30px;
-            background: 
-#f9fafb;
+            background: #f9fafb;
+            min-height: 90vh;
+            flex: 1;
+            overflow-y: auto;
         }
         .complete-btn {
-            background: 
-#2a4386;
+            background: #2a4386;
             color: white;
             padding: 8px 14px;
             border: none;
@@ -80,14 +83,13 @@
             margin-top: 8px;
             margin-left: 10px;
         }
-        
         .undo-btn:hover {
             opacity: 0.9;
         }
         .checkmark {
             height: 10px;
             opacity: 0.4;
-            margin-left: 5px; /* Adjust based on padding */
+            margin-left: 5px;
         }
         .logout {
             margin-top: 30px;
@@ -113,6 +115,28 @@
             opacity: 0.6;
             margin-right: 4px;
         }
+        .progress-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 0.5px solid #e0e0e0;
+        }
+        .progress-label {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-bottom: 6px;
+        }
+        .progress-bar-track {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 6px;
+            width: 100%;
+        }
+        .progress-bar-fill {
+            background: #2a4386;
+            border-radius: 10px;
+            height: 6px;
+            transition: width 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -121,6 +145,13 @@
     <div class="sidebar-header">
         <img src="{{ url_for('static', filename='logo.png') }}" class="sidebar-logo">
         <div class="sidebar-title">| Onboarding Hub</div>
+    </div>
+    <!-- PROGRESS -->
+    <div class="progress-section">
+        <div class="progress-label">{{ completed|length }} of {{ sections|length + access_sections|length }} completed</div>
+        <div class="progress-bar-track">
+            <div class="progress-bar-fill" style="width: {% if (sections|length + access_sections|length) > 0 %}{{ ((completed|length / (sections|length + access_sections|length)) * 100)|round }}{% else %}0{% endif %}%"></div>
+        </div>
     </div>
     <!-- GENERAL -->
     <div class="subheading">General</div>
@@ -146,6 +177,15 @@
             </li>
         {% endfor %}
     </ul>
+    <!-- ADMIN (only shown to admins) -->
+    {% if session.get('is_admin') %}
+    <div class="logout" style="margin-top: 12px; padding-top: 12px; border-top: none;">
+        <a href="/admin">
+            <img src="{{ url_for('static', filename='settings.png') }}" class="icon-settings">
+            Settings
+        </a>
+    </div>
+    {% endif %}
     <!-- SIGN OUT -->
     <div class="logout">
         <a href="/logout">
@@ -157,7 +197,163 @@
 
 <div class="main">
     <h1>{{ current_item }}</h1>
-    <p>{{ content }}</p>
+    {% if current_item == 'Welcome' %}
+    
+    <p>This site contains a checklist of tasks for new starters. Use the menu on the left to navigate through the onboarding steps. 
+    Click "Mark Complete" on each page once you've completed the step, and feel free to revisit any section at any time.<br><br>
+    If you have any questions, don't hesitate to reach out to your manager.</p>
+    
+    {% elif current_item == 'Training' %}
+    <p>You will need to complete training modules assigned to you through <a href="https://edfenergy.learning.peoplefluent.net/ekp/servlet/ekp?TX=WIDGETCONTAINERPAGE">MyLearningHub</a> and additional classroom training sessions which you will be notified about.
+    <br><br>Training will include health and safety, compliance, role-specific training, and more. Please check MyLearningHub regularly to stay on top of your assigned courses and deadlines.
+    </p>
+    <p>You also have access to a range of resources to support your learning and development, these resources include:</p>
+    <ul>
+        <li><a href="https://www.linkedin.com/learning/">LinkedIn Learning</a>: Access a vast library of online courses and tutorials to enhance your skills and knowledge.</li>
+        <li><a href="https://www.qa.com/">QA</a>: Access courses and training materials to enhance your tech stack.</li>
+        <li>Internal documentation: Explore our internal knowledge base for guides, best practices, and company-specific information.</li>
+    </ul>
+    <p>Once you've completed your training, you can mark this step as complete. If you have any questions about your training requirements, please contact your manager or HR representative.</p>
+
+    {% elif current_item == 'Authentication' %}
+    <p>Setting up authentication correctly ensures you can securely access all company systems from day one.</p>
+    <p>You will need to complete the following:</p>
+    <ul>
+        <li><strong>Multi-Factor Authentication (MFA):</strong> Enrol your device with the company's MFA system. You will receive an email with setup instructions. MFA is required to access most internal systems.</li>
+        <li><strong>Single Sign-On (SSO):</strong> Once MFA is set up, most tools and applications will be accessible via SSO using your company credentials.</li>
+        <li><strong>Password policy:</strong> Ensure your password meets the company's requirements — minimum 12 characters, including uppercase, lowercase, numbers, and symbols. Passwords must be changed every 90 days.</li>
+        <li><strong>VPN:</strong> Install and configure the company VPN to access internal systems when working remotely. Setup instructions will be provided by IT.</li>
+    </ul>
+    <p>If you encounter any issues during setup, raise a ticket with the IT helpdesk or contact your manager.</p>
+
+    {% elif current_item == 'Equipment' %}
+    <p>Your equipment should have been arranged prior to your start date. Please check that you have received everything you need to work effectively.</p>
+    <ul>
+        <li><strong>Laptop:</strong> Your laptop should be pre-configured with the necessary software. If anything is missing or not working, contact IT.</li>
+        <li><strong>Building access:</strong> Your access card or credentials for building entry should be ready on your first day. Contact facilities if you have any issues.</li>
+    </ul>
+
+    <p>If you require any additional equipment, you can place a request through <a href="https://edfenergy.service-now.com/myit">MyIT</a>.</p>
+
+    <p>If any equipment is missing, damaged, or not functioning correctly, raise a ticket with the IT helpdesk as soon as possible.</p>
+    
+
+
+    {% elif current_item == 'Information sources' %}
+    <p>There are several key platforms and resources you should familiarise yourself with to stay informed and find the information you need.</p>
+    <ul>
+        <li><strong><a href="https://edfenergynnb.sharepoint.com/sites/Intranet">Intranet</a></strong> The company intranet is your central hub for news, policies, announcements, and internal resources. Bookmark it and check it regularly.</li>
+        <li><strong><a href="https://edfuk.atlassian.net/wiki/home">Confluence</a></strong> Our internal knowledge base where teams document processes, technical guides, and project information. You will be granted access as part of the Access checklist.</li>
+        <li><strong><a href="https://edfenergynnb.sharepoint.com/sites/GENISApplicationsDepartment">SharePoint</a></strong> Used for storing and sharing documents across teams. Your manager will point you to the relevant team sites.</li>
+        <li><strong>Company newsletter:</strong> A regular update covering company news, initiatives, and events. You will be automatically subscribed using your company email.</li>
+        <li><strong>Team meetings:</strong> Regular team stand-ups and all-hands meetings are a key source of up-to-date information. Your manager will add you to the relevant calendar invites.</li>
+    </ul>
+    <p>If you are unsure where to find something, your manager or a colleague will be able to point you in the right direction.</p>
+
+    {% elif current_item == 'Organisation structure' %}
+    <p>Understanding how the organisation is structured will help you navigate teams, escalate issues, and collaborate effectively.</p>
+    <ul>
+        <li><strong>Your team:</strong> Your direct team, reporting line, and key contacts will be shared with you by your manager during your first week.</li>
+        <li><strong>Departments:</strong> The company is organised into several departments including Technology, Operations, Finance, HR, and more. Each department has its own leadership team.</li>
+        <li><strong>Leadership:</strong> An overview of the senior leadership team is available on the intranet. Familiarise yourself with key stakeholders relevant to your role.</li>
+        <li><strong>Org chart:</strong> A full organisational chart is available on the intranet and is updated regularly. Your manager can walk you through the structure most relevant to your team.</li>
+    </ul>
+    <p>Don't hesitate to ask your manager or colleagues if you are unsure about who to contact for a particular matter.</p>
+
+    {% elif current_item == 'myHR' %}
+    <p>myHR is the self-service HR platform where you can manage your personal information, payroll, and leave.</p>
+    <p>You should log in and complete the following as soon as possible:</p>
+    <ul>
+        <li><strong>Personal details:</strong> Verify that your name, address, and contact information are correct.</li>
+        <li><strong>Bank details:</strong> Enter your bank account details to ensure your salary is paid correctly.</li>
+        <li><strong>Tax information:</strong> Review and confirm your tax code. If anything looks incorrect, contact payroll.</li>
+        <li><strong>Emergency contact:</strong> Add at least one emergency contact.</li>
+        <li><strong>Leave:</strong> Familiarise yourself with how to request annual leave, view your entitlement, and check your remaining balance.</li>
+    </ul>
+    <p>Access myHR using your company SSO credentials. If you have any issues logging in or completing your details, contact HR directly.</p>
+
+    {% elif current_item == 'Employee benefits' %}
+    <p>The company offers a range of benefits available to all employees. Take time to review what is available and enrol where required.</p>
+    <ul>
+        <li><strong>Pension:</strong> You will be automatically enrolled into the company pension scheme. Details of contribution rates and how to manage your pension are available on the intranet.</li>
+        <li><strong>Private healthcare:</strong> Eligible employees can enrol in the company's private healthcare scheme. Check the intranet or contact HR for eligibility and enrolment details.</li>
+        <li><strong>Annual leave:</strong> Your leave entitlement is outlined in your contract. Leave is managed through myHR.</li>
+        <li><strong>Cycle to work scheme:</strong> Save on the cost of a bike and accessories through the government-backed cycle to work scheme. Details are available on the intranet.</li>
+        <li><strong>Employee assistance programme (EAP):</strong> Confidential support for personal and professional challenges, available 24/7. Contact details are on the intranet.</li>
+        <li><strong>Learning & development budget:</strong> Depending on your role, you may have access to a personal L&D budget. Speak to your manager for details.</li>
+    </ul>
+    <p>For full details on all benefits and how to enrol, visit the benefits section of the intranet or contact HR.</p>
+
+    {% elif current_item == 'Jira' %}
+    <p>Jira is our project and issue tracking tool, used across teams to manage work, track bugs, and plan sprints.</p>
+    <p>To request access:</p>
+    <ul>
+        <li>Raise a request through the IT helpdesk via <a href="#">ServiceNow</a>, selecting Jira from the application access list.</li>
+        <li>Your manager will need to approve the request and confirm which projects you require access to.</li>
+        <li>Once approved, you will receive a confirmation email and can log in via SSO.</li>
+    </ul>
+    <p>Once you have access, your manager or team lead will walk you through the boards and workflows relevant to your role.</p>
+
+    {% elif current_item == 'Confluence' %}
+    <p>Confluence is our internal knowledge base and documentation platform. Teams use it to document processes, technical guides, decisions, and project information.</p>
+    <p>To request access:</p>
+    <ul>
+        <li>Raise a request through <a href="#">ServiceNow</a>, selecting Confluence from the application access list.</li>
+        <li>Your manager will confirm which spaces you need access to.</li>
+        <li>Once approved, log in using your SSO credentials.</li>
+    </ul>
+    <p>Start by exploring your team's space and any spaces your manager recommends. Confluence is a great first port of call when looking for how something works or has been documented previously.</p>
+
+    {% elif current_item == 'Figma' %}
+    <p>Figma is our design and prototyping tool, used by design and product teams to create and collaborate on UI designs.</p>
+    <p>To request access:</p>
+    <ul>
+        <li>Raise a request through <a href="#">ServiceNow</a>, selecting Figma from the application access list.</li>
+        <li>Access is typically granted at viewer level by default. If you require editor access, your manager will need to confirm this in the request.</li>
+        <li>Once approved, you will receive an invitation to join the company Figma organisation via your company email.</li>
+    </ul>
+    <p>If your role does not require Figma access, you can skip this step.</p>
+
+    {% elif current_item == 'ServiceNow' %}
+    <p>ServiceNow is our IT service management platform. It is used to raise and track IT support tickets, request software access, and report incidents.</p>
+    <p>To request access:</p>
+    <ul>
+        <li>ServiceNow access is provisioned automatically for all new starters. You should be able to log in using your SSO credentials from your first day.</li>
+        <li>If you cannot access ServiceNow, contact the IT helpdesk directly by phone or email — details are on the intranet.</li>
+    </ul>
+    <p>You will use ServiceNow to request access to most of the other tools in this checklist, so getting this set up first is important.</p>
+
+    {% elif current_item == 'Service accounts' %}
+    <p>Depending on your role, you may require one or more service accounts to access shared systems, run automated processes, or integrate with external services.</p>
+    <ul>
+        <li><strong>What is a service account:</strong> A service account is a non-personal account used by applications or automated processes rather than individual users.</li>
+        <li><strong>Requesting a service account:</strong> Raise a request through <a href="#">ServiceNow</a> with details of the system and purpose. Your manager will need to approve the request.</li>
+        <li><strong>Credentials management:</strong> Service account credentials must be stored securely using the approved secrets management tool. Do not store credentials in code or plain text files.</li>
+    </ul>
+    <p>If you are unsure whether your role requires a service account, speak to your manager or team lead.</p>
+
+    {% elif current_item == 'Developer folders' %}
+    <p>As a developer, you will need access to the relevant shared folders and repositories for your team.</p>
+    <ul>
+        <li><strong>SharePoint / network drives:</strong> Request access to your team's shared folders through <a href="#">ServiceNow</a>. Your manager will confirm which folders are relevant to your role.</li>
+        <li><strong>Code repositories:</strong> Access to the company's source control system (e.g. GitHub, Azure DevOps) will be arranged by your team lead. You will receive an invitation via your company email.</li>
+        <li><strong>Naming conventions:</strong> Familiarise yourself with the team's folder structure and naming conventions — these are documented in Confluence.</li>
+    </ul>
+    <p>Once access has been granted, your manager or a senior team member will walk you through the folder structure and where to find key resources.</p>
+
+    {% elif current_item == 'Developer tools' %}
+    <p>The following tools are commonly used by the development team. Ensure you have access to everything relevant to your role.</p>
+    <ul>
+        <li><strong>IDE:</strong> The team primarily uses Visual Studio Code. Download it from the <a href="https://code.visualstudio.com/">official site</a> if it is not already installed on your machine.</li>
+        <li><strong>Azure DevOps / GitHub:</strong> Used for source control, CI/CD pipelines, and project tracking. Request access via <a href="#">ServiceNow</a>.</li>
+        <li><strong>Docker:</strong> Used for containerisation. Installation instructions and internal usage guidelines are available in Confluence.</li>
+        <li><strong>Postman:</strong> Used for API testing. Available to download from the <a href="https://www.postman.com/">official site</a>.</li>
+        <li><strong>Azure Portal:</strong> Access to the Azure Portal is role-dependent. Request access via <a href="#">ServiceNow</a> if required.</li>
+    </ul>
+    <p>Your team lead will advise on any additional tools specific to your project or tech stack. Internal setup guides for most tools are available in Confluence.</p>
+
+    {% endif %}
+
     {% if current_item not in completed %}
         <a href="/complete/{{ current_item }}">
             <button class="complete-btn">Mark Complete</button>
@@ -167,8 +363,6 @@
            <button class="undo-btn">Undo</button>
         </a>
     {% endif %}
-</div>
-    
 </div>
 </body>
 </html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Onboarding Hub – Admin</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: sans-serif; margin: 0; background: #f9fafb; }
+        .topbar {
+            background: #ffffff;
+            border-bottom: 0.5px solid #e0e0e0;
+            padding: 14px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .topbar-logo { height: 26px; }
+        .topbar-title {
+            padding-top: 2px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #2a4386;
+        }
+        .topbar-right a {
+            margin-left: 30px;
+            font-size: 13px;
+            color: #2a4386;
+            opacity: 0.6;
+            text-decoration: none;
+        }
+        .topbar-right a:hover { opacity: 1; }
+        .container { max-width: 860px; margin: 40px auto; padding: 0 30px; }
+        h1 { font-size: 22px; color: #2a4386; margin-bottom: 6px; }
+        .subtitle { font-size: 14px; color: #888; margin-bottom: 30px; }
+
+        /* Create user card */
+        .card {
+            background: #ffffff;
+            border: 0.5px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        .card h2 { font-size: 15px; color: #2a4386; margin: 0 0 18px; }
+        .form-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 160px; }
+        .form-group label { font-size: 12px; color: #555; }
+        .form-group input[type="text"],
+        .form-group input[type="password"] {
+            padding: 8px 10px;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #2a4386;
+            outline: none;
+        }
+        .form-group input:focus { border-color: #2a4386; }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding-bottom: 2px;
+        }
+        .checkbox-group label { font-size: 13px; color: #555; margin: 0; }
+        .btn {
+            background: #2a4386;
+            color: white;
+            padding: 8px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn-danger {
+            background: none;
+            border: 1px solid #f5c1c1;
+            color: #a32d2d;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .btn-danger:hover { background: #fff0f0; }
+        .btn-secondary {
+            background: none;
+            border: 1px solid #d0d5dd;
+            color: #2a4386;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .btn-secondary:hover { background: #f0f0f0; }
+
+        /* Flash messages */
+        .flash { padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-bottom: 20px; }
+        .flash.success { background: #f0faf4; border: 1px solid #b7dfc6; color: #1a6b3a; }
+        .flash.error   { background: #fff0f0; border: 1px solid #f5c1c1; color: #a32d2d; }
+
+        /* Users table */
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { text-align: left; font-size: 12px; color: #888; font-weight: normal; padding: 0 12px 10px; }
+        td { padding: 12px; border-top: 0.5px solid #e0e0e0; color: #333; vertical-align: middle; }
+        tr:first-child td { border-top: none; }
+        .badge {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-weight: normal;
+        }
+        .badge-admin { background: #e8edf8; color: #2a4386; }
+        .badge-user  { background: #f1f1f1; color: #888; }
+        .actions { display: flex; gap: 8px; justify-content: flex-end; }
+        .you { font-size: 11px; color: #aaa; margin-left: 6px; }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-left">
+        <img src="{{ url_for('static', filename='logo.png') }}" class="topbar-logo">
+        <div class="topbar-title">| Admin</div>
+    </div>
+    <div class="topbar-right">
+        <a href="/">← Back to Onboarding Hub</a>
+        <a href="/logout">Sign out</a>
+    </div>
+</div>
+
+<div class="container">
+    <h1>User management</h1>
+    <p class="subtitle">Create and manage users who can access the Onboarding Hub.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <!-- Create user -->
+    <div class="card">
+        <h2>Create new user</h2>
+        <form method="POST" action="/admin/create">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" name="username" placeholder="e.g. jsmith" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="••••••••" required>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" name="is_admin" id="is_admin">
+                    <label for="is_admin">Admin</label>
+                </div>
+                <button type="submit" class="btn">Create user</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Users table -->
+    <div class="card">
+        <h2>All users</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Created</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>
+                        {{ user.username }}
+                        {% if user.id == session['user_id'] %}
+                            <span class="you">(you)</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.is_admin %}
+                            <span class="badge badge-admin">Admin</span>
+                        {% else %}
+                            <span class="badge badge-user">User</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ user.created_at.strftime('%d %b %Y') if user.created_at else '—' }}</td>
+                    <td>
+                        <div class="actions">
+                            {% if user.id != session['user_id'] %}
+                                <form method="POST" action="/admin/toggle/{{ user.id }}">
+                                    <button type="submit" class="btn-secondary">
+                                        {{ 'Remove admin' if user.is_admin else 'Make admin' }}
+                                    </button>
+                                </form>
+                                <form method="POST" action="/admin/delete/{{ user.id }}"
+                                      onsubmit="return confirm('Delete {{ user.username }}? This cannot be undone.')">
+                                    <button type="submit" class="btn-danger">Delete</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

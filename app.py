@@ -93,6 +93,60 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+# ── Admin routes ──────────────────────────────────────────────────────────────
+@app.route('/admin')
+@admin_required
+def admin():
+    users = User.query.order_by(User.created_at.desc()).all()
+    return render_template('admin.html', users=users)
+
+@app.route('/admin/create', methods=['POST'])
+@admin_required
+def admin_create_user():
+    username = request.form.get('username', '').strip()
+    password = request.form.get('password', '')
+    is_admin = request.form.get('is_admin') == 'on'
+
+    if not username or not password:
+        flash('Username and password are required.', 'error')
+        return redirect(url_for('admin'))
+
+    if User.query.filter_by(username=username).first():
+        flash(f'Username "{username}" already exists.', 'error')
+        return redirect(url_for('admin'))
+
+    user = User(username=username, is_admin=is_admin)
+    user.set_password(password)
+    db.session.add(user)
+    db.session.commit()
+    flash(f'User "{username}" created successfully.', 'success')
+    return redirect(url_for('admin'))
+
+@app.route('/admin/delete/<int:user_id>', methods=['POST'])
+@admin_required
+def admin_delete_user(user_id):
+    if user_id == session['user_id']:
+        flash('You cannot delete your own account.', 'error')
+        return redirect(url_for('admin'))
+    user = User.query.get_or_404(user_id)
+    Completion.query.filter_by(user_id=user_id).delete()
+    db.session.delete(user)
+    db.session.commit()
+    flash(f'User "{user.username}" deleted.', 'success')
+    return redirect(url_for('admin'))
+
+@app.route('/admin/toggle/<int:user_id>', methods=['POST'])
+@admin_required
+def admin_toggle_admin(user_id):
+    if user_id == session['user_id']:
+        flash('You cannot change your own admin status.', 'error')
+        return redirect(url_for('admin'))
+    user = User.query.get_or_404(user_id)
+    user.is_admin = not user.is_admin
+    db.session.commit()
+    flash(f'Admin status updated for "{user.username}".', 'success')
+    return redirect(url_for('admin'))
+
 # ── App routes ────────────────────────────────────────────────────────────────
 @app.route('/')
 @login_required
@@ -138,5 +192,6 @@ def render_page(current_item=None):
         completed=get_completed(),
         content="Placeholder"
     )
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
