@@ -89,6 +89,30 @@
             opacity: 0.4;
             margin-left: 5px; /* Adjust based on padding */
         }
+        .logout {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 0.5px solid #e0e0e0;
+        }
+        .logout a {
+            color: #2a4386;
+            font-size: 13px;
+            opacity: 0.6;
+            padding: 6px 8px;
+            display: flex;
+            align-items: center;
+        }
+        .logout a:hover {
+            opacity: 1;
+            font-weight: normal;
+        }
+        .icon-settings {
+            vertical-align: middle;
+            width: 20px;
+            height: 20px;
+            opacity: 0.6;
+            margin-right: 4px;
+        }
     </style>
 </head>
 <body>
@@ -122,7 +146,15 @@
             </li>
         {% endfor %}
     </ul>
+    <!-- SIGN OUT -->
+    <div class="logout">
+        <a href="/logout">
+            <img src="{{ url_for('static', filename='quit.png') }}" class="icon-settings">
+            Sign out
+        </a>
+    </div>
 </div>
+
 <div class="main">
     <h1>{{ current_item }}</h1>
     <p>{{ content }}</p>
