@@ -202,4 +202,5 @@ def render_page(current_item=None):
     )
 
 if __name__ == "__main__":
+    # For production, use a WSGI server like Gunicorn instead of Flask's built-in server.
     app.run(host="0.0.0.0", port=5000)
