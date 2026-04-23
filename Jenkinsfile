@@ -35,7 +35,16 @@ spec:
                 }
             }
     
-
+        stage('OWASP Dependency Check') {
+            steps {
+                container('azure-kubectl') {
+                    sh """
+                    mkdir -p dependency-check
+                    echo "Dependency check stage reached" > dependency-check/test.txt
+                    """
+                }
+            }
+        }
         stage('Log in to Azure') {
             steps {
                 container('azure-kubectl') {
