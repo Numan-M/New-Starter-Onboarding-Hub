@@ -15,6 +15,7 @@ spec:
         command:
         - cat
         tty: true
+
     - name: dependency-check
         image: owasp/dependency-check:latest
         command:
