@@ -45,7 +45,7 @@ spec:
                 steps {
                     container('dependency-check') {
                         sh """
-                        dependency-check.sh \
+                        /usr/share/dependency-check/bin/dependency-check.sh \
                         --project "nsoh" \
                         --scan . \
                         --format HTML \
