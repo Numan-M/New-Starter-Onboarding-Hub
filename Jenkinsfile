@@ -35,28 +35,34 @@ spec:
     }
 
     stages {
-            stage('Checkout') {
-                steps {
-                    checkout scm
-                }
+        stage('Checkout') {
+            steps {
+                checkout scm
             }
-    
-            stage('OWASP Dependency Check') {
-                steps {
-                    container('dependency-check') {
-                        withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
-                            sh '''
-                            /usr/share/dependency-check/bin/dependency-check.sh \
-                            --project "nsoh" \
-                            --scan . \
-                            --format HTML \
-                            --out dependency-check-report \
-                            --nvdApiKey $NVD_API_KEY
-                            '''
-                        }
+        }
+
+        stage('OWASP Dependency Check') {
+            steps {
+                container('dependency-check') {
+                    withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+                        sh '''
+                        /usr/share/dependency-check/bin/dependency-check.sh \
+                        --project "nsoh" \
+                        --scan . \
+                        --format HTML \
+                        --out dependency-check-report \
+                        --nvdApiKey $NVD_API_KEY
+                        '''
                     }
                 }
             }
+        }
+
+        stage('Archive Dependency Report') {
+            steps {
+                archiveArtifacts artifacts: 'dependency-check-report/**', fingerprint: true
+            }
+        }
         
         stage('Log in to Azure') {
             steps {
