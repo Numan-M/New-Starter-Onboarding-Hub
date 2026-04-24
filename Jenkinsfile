@@ -45,6 +45,7 @@ spec:
                 }
             }
         }
+        
         stage('Log in to Azure') {
             steps {
                 container('azure-kubectl') {
