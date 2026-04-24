@@ -45,14 +45,14 @@ spec:
                 steps {
                     container('dependency-check') {
                         withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
-                            sh """
+                            sh '''
                             /usr/share/dependency-check/bin/dependency-check.sh \
                             --project "nsoh" \
                             --scan . \
                             --format HTML \
                             --out dependency-check-report \
                             --nvdApiKey $NVD_API_KEY
-                            """
+                            '''
                         }
                     }
                 }
