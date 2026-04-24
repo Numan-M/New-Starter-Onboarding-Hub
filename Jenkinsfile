@@ -44,13 +44,16 @@ spec:
             stage('OWASP Dependency Check') {
                 steps {
                     container('dependency-check') {
-                        sh """
-                        /usr/share/dependency-check/bin/dependency-check.sh \
-                        --project "nsoh" \
-                        --scan . \
-                        --format HTML \
-                        --out dependency-check-report
-                        """
+                        withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+                            sh """
+                            /usr/share/dependency-check/bin/dependency-check.sh \
+                            --project "nsoh" \
+                            --scan . \
+                            --format HTML \
+                            --out dependency-check-report \
+                            --nvdApiKey $NVD_API_KEY
+                            """
+                        }
                     }
                 }
             }
