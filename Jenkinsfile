@@ -11,16 +11,16 @@ spec:
     serviceAccountName: default
     containers:
     - name: azure-kubectl
-        image: numanepa.azurecr.io/tools/azure-kubectl:latest
-        command:
-        - cat
-        tty: true
+      image: numanepa.azurecr.io/tools/azure-kubectl:latest
+      command:
+      - cat
+      tty: true
 
     - name: dependency-check
-        image: owasp/dependency-check:latest
-        command:
-        - cat
-        tty: true
+      image: owasp/dependency-check:latest
+      command:
+      - cat
+      tty: true
 '''
         }
     }
