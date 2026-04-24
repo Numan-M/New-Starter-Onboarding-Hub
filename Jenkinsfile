@@ -11,10 +11,15 @@ spec:
     serviceAccountName: default
     containers:
     - name: azure-kubectl
-      image: numanepa.azurecr.io/tools/azure-kubectl:latest
-      command:
-      - cat
-      tty: true
+        image: numanepa.azurecr.io/tools/azure-kubectl:latest
+        command:
+        - cat
+        tty: true
+    - name: dependency-check
+        image: owasp/dependency-check:latest
+        command:
+        - cat
+        tty: true
 '''
         }
     }
@@ -35,16 +40,19 @@ spec:
                 }
             }
     
-        stage('OWASP Dependency Check') {
-            steps {
-                container('azure-kubectl') {
-                    sh """
-                    mkdir -p dependency-check
-                    echo "Dependency check stage reached" > dependency-check/test.txt
-                    """
+            stage('OWASP Dependency Check') {
+                steps {
+                    container('dependency-check') {
+                        sh """
+                        dependency-check.sh \
+                        --project "nsoh" \
+                        --scan . \
+                        --format HTML \
+                        --out dependency-check-report
+                        """
+                    }
                 }
             }
-        }
         
         stage('Log in to Azure') {
             steps {
