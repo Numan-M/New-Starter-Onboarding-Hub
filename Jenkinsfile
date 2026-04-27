@@ -15,12 +15,6 @@ spec:
       command:
       - cat
       tty: true
-
-    - name: dependency-check
-      image: numanepa.azurecr.io/tools/dependency-check:cached
-      command:
-      - cat
-      tty: true
 '''
         }
     }
@@ -38,22 +32,6 @@ spec:
         stage('Checkout') {
             steps {
                 checkout scm
-            }
-        }
-
-        stage('OWASP Dependency Check') {
-            steps {
-                container('dependency-check') {
-                    sh '''
-                    ls -la
-                    /usr/share/dependency-check/bin/dependency-check.sh \
-                    --project nsoh \
-                    --scan requirements.txt \
-                    --format HTML \
-                    --out dependency-check-report \
-                    --noupdate
-                    '''
-                }
             }
         }
 
