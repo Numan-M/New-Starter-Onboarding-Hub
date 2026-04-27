@@ -16,7 +16,7 @@ spec:
       - cat
       tty: true
     - name: python
-      image: numanepa.azurecr.io/tools/python:latest
+      image: numanepa.azurecr.io/python:latest
       command:
       - cat
       tty: true
