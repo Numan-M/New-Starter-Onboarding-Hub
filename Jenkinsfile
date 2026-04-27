@@ -15,9 +15,8 @@ spec:
       command:
       - cat
       tty: true
-
-    - name: dependency-check
-      image: numanepa.azurecr.io/tools/dependency-check:cached
+    - name: python
+      image: numanepa.azurecr.io/tools/python:latest
       command:
       - cat
       tty: true
@@ -41,25 +40,14 @@ spec:
             }
         }
 
-        stage('OWASP Dependency Check') {
+        stage('Security Scan') {
             steps {
-                container('dependency-check') {
+                container('python') {
                     sh '''
-                    ls -la
-                    /usr/share/dependency-check/bin/dependency-check.sh \
-                    --project nsoh \
-                    --scan requirements.txt \
-                    --format HTML \
-                    --out dependency-check-report \
-                    --noupdate
+                    pip install -r requirements.txt
+                    pip-audit
                     '''
                 }
-            }
-        }
-
-        stage('Archive Dependency Report') {
-            steps {
-                archiveArtifacts artifacts: 'dependency-check-report/**', fingerprint: true
             }
         }
         
