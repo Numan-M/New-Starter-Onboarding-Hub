@@ -180,7 +180,7 @@
     <!-- ADMIN (only shown to admins) -->
     {% if session.get('is_admin') %}
     <div class="logout" style="margin-top: 12px; padding-top: 12px; border-top: none;">
-        <a href="/admin">
+        <a href="{{ url_for('admin') }}">
             <img src="{{ url_for('static', filename='settings.png') }}" class="icon-settings">
             Settings
         </a>
@@ -188,7 +188,7 @@
     {% endif %}
     <!-- SIGN OUT -->
     <div class="logout">
-        <a href="/logout">
+        <a href="{{ url_for('logout') }}">
             <img src="{{ url_for('static', filename='quit.png') }}" class="icon-settings">
             Sign out
         </a>
