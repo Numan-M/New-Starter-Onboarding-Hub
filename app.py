@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "dev-secret")
+app.secret_key = os.environ["SECRET_KEY"]
 uri = os.environ.get("DATABASE_URL")
 
 if not uri:
@@ -71,14 +71,16 @@ def admin_required(f):
     def decorated(*args, **kwargs):
         if 'user_id' not in session:
             return redirect(url_for('login'))
-        user = User.query.get(session['user_id'])
+
+        user = db.session.get(User, session['user_id'])
         if not user or not user.is_admin:
-            return redirect(url_for('home'))
+            return redirect(url_for('login'))
+
         return f(*args, **kwargs)
     return decorated
 
 def get_completed():
-    rows = Completion.query.filter_by(user_id=session['user_id']).all()
+    rows = db.session.query(Completion).filter_by(user_id=session['user_id']).all()
     return [r.section_name for r in rows]
 
 # ── Auth routes ───────────────────────────────────────────────────────────────
@@ -90,9 +92,8 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
             session['user_id'] = user.id
-            session['username'] = user.username
             session['is_admin'] = user.is_admin
-            return redirect(url_for('home'))
+            return redirect(url_for('login'))
         return render_template('login.html', error='Incorrect username or password.', username=username)
     return render_template('login.html')
 
@@ -102,11 +103,13 @@ def logout():
     return redirect(url_for('login'))
 
 # ── Admin routes ──────────────────────────────────────────────────────────────
+
 @app.route('/admin')
 @admin_required
 def admin():
-    users = User.query.order_by(User.created_at.desc()).all()
+    users = db.session.query(User).order_by(User.created_at.desc()).all()
     return render_template('admin.html', users=users)
+
 
 @app.route('/admin/create', methods=['POST'])
 @admin_required
@@ -119,39 +122,56 @@ def admin_create_user():
         flash('Username and password are required.', 'error')
         return redirect(url_for('admin'))
 
-    if User.query.filter_by(username=username).first():
+    existing = db.session.query(User).filter_by(username=username).first()
+    if existing:
         flash(f'Username "{username}" already exists.', 'error')
         return redirect(url_for('admin'))
 
     user = User(username=username, is_admin=is_admin)
     user.set_password(password)
+
     db.session.add(user)
     db.session.commit()
+
     flash(f'User "{username}" created successfully.', 'success')
     return redirect(url_for('admin'))
+
 
 @app.route('/admin/delete/<int:user_id>', methods=['POST'])
 @admin_required
 def admin_delete_user(user_id):
-    if user_id == session['user_id']:
+    if user_id == session.get('user_id'):
         flash('You cannot delete your own account.', 'error')
         return redirect(url_for('admin'))
-    user = User.query.get_or_404(user_id)
-    Completion.query.filter_by(user_id=user_id).delete()
+
+    user = db.session.get(User, user_id)
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('admin'))
+
+    db.session.query(Completion).filter_by(user_id=user_id).delete()
     db.session.delete(user)
     db.session.commit()
+
     flash(f'User "{user.username}" deleted.', 'success')
     return redirect(url_for('admin'))
+
 
 @app.route('/admin/toggle/<int:user_id>', methods=['POST'])
 @admin_required
 def admin_toggle_admin(user_id):
-    if user_id == session['user_id']:
+    if user_id == session.get('user_id'):
         flash('You cannot change your own admin status.', 'error')
         return redirect(url_for('admin'))
-    user = User.query.get_or_404(user_id)
+
+    user = db.session.get(User, user_id)
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('admin'))
+
     user.is_admin = not user.is_admin
     db.session.commit()
+
     flash(f'Admin status updated for "{user.username}".', 'success')
     return redirect(url_for('admin'))
 
@@ -174,7 +194,7 @@ def access(tool):
 @app.route('/complete/<item>')
 @login_required
 def complete(item):
-    already = Completion.query.filter_by(
+    already = db.session.query(Completion).filter_by(
         user_id=session['user_id'], section_name=item
     ).first()
     if not already:
@@ -185,7 +205,7 @@ def complete(item):
 @app.route('/undo/<item>')
 @login_required
 def undo(item):
-    Completion.query.filter_by(
+    db.session.query(Completion).filter_by(
         user_id=session['user_id'], section_name=item
     ).delete()
     db.session.commit()
