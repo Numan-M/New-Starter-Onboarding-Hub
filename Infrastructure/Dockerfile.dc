@@ -1,0 +1,9 @@
+FROM owasp/dependency-check:latest
+
+ARG NVD_API_KEY
+
+RUN /usr/share/dependency-check/bin/dependency-check.sh \
+    --updateonly \
+    --nvdApiKey ${NVD_API_KEY}
+
+# az acr build   --registry NumanEPA   --resource-group NumanEPA   --image tools/dependency-check:cached   --file Dockerfile.dc   --build-arg NVD_API_KEY=5d5d35c9-d8c1-4bc5-a89e-e58873151acd   .
