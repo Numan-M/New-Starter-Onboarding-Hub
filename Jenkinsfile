@@ -17,7 +17,7 @@ spec:
       tty: true
 
     - name: dependency-check
-      image: owasp/dependency-check:latest
+      image: numanepa.azurecr.io/tools/dependency-check:cached
       command:
       - cat
       tty: true
@@ -44,17 +44,14 @@ spec:
         stage('OWASP Dependency Check') {
             steps {
                 container('dependency-check') {
-                    withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
-                        sh '''
-                        /usr/share/dependency-check/bin/dependency-check.sh \
-                        --project "nsoh" \
-                        --scan . \
-                        --format HTML \
-                        --out dependency-check-report \
-                        --nvdApiKey $NVD_API_KEY
-                        --noupdate
-                        '''
-                    }
+                    sh '''
+                    /usr/share/dependency-check/bin/dependency-check.sh \
+                    --project nsoh \
+                    --scan . \
+                    --format HTML \
+                    --out dependency-check-report \
+                    --noupdate
+                    '''
                 }
             }
         }
