@@ -15,6 +15,11 @@ spec:
       command:
       - cat
       tty: true
+    - name: python
+      image: numanepa.azurecr.io/tools/python:latest
+      command:
+      - cat
+      tty: true
 '''
         }
     }
@@ -35,9 +40,14 @@ spec:
             }
         }
 
-        stage('Archive Dependency Report') {
+        stage('Security Scan') {
             steps {
-                archiveArtifacts artifacts: 'dependency-check-report/**', fingerprint: true
+                container('python') {
+                    sh '''
+                    pip install -r requirements.txt
+                    pip-audit
+                    '''
+                }
             }
         }
         
