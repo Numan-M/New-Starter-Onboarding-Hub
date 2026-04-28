@@ -39,18 +39,34 @@ spec:
                 checkout scm
             }
         }
+        stage('Install Dependencies') {
+            steps {
+                container('python') {
+                    sh '''
+                    pip install -r requirements.txt
+                    '''
+                }
+            }
+        }
 
         stage('Security Scan') {
             steps {
                 container('python') {
                     sh '''
-                    pip install -r requirements.txt
                     pip-audit
                     '''
                 }
             }
         }
-        
+        stage('Run Tests') {
+            steps {
+                container('python') {
+                    sh '''
+                    pytest -q
+                    '''
+                }
+            }
+        }
         stage('Log in to Azure') {
             steps {
                 container('azure-kubectl') {
