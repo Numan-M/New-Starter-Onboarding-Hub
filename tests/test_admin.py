@@ -1,7 +1,5 @@
 from app import User, app
 
-
-
 # Permissions 
 def test_admin_access_allowed(client):
     client.post('/login', data={
@@ -59,7 +57,7 @@ def test_admin_back_to_home(client):
     response = client.get('/', follow_redirects=True)
 
     assert response.status_code == 200
-    assert b'Welcome' in response.data  # or another onboarding page check
+    assert b'Welcome' in response.data  
 
 
 def test_admin_logout(client):
@@ -72,7 +70,6 @@ def test_admin_logout(client):
     # ensure we're logged in by hitting admin
     client.get('/admin')
 
-    # click logout
     response = client.get('/logout', follow_redirects=True)
 
     assert response.status_code == 200
