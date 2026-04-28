@@ -64,9 +64,7 @@ spec:
                     sh '''
                     export SECRET_KEY=dev-test-key
                     export DATABASE_URL=sqlite:///:memory:
-
-                    pip install -r requirements.txt
-                    pytest -q
+                    pytest -v
                     '''
                 }
             }
