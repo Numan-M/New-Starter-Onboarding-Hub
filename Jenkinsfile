@@ -15,8 +15,15 @@ spec:
       command:
       - cat
       tty: true
+
     - name: python
       image: numanepa.azurecr.io/python:latest
+      command:
+      - cat
+      tty: true
+
+    - name: trufflehog
+      image: numanepa.azurecr.io/tools/trufflehog:latest
       command:
       - cat
       tty: true
@@ -48,17 +55,16 @@ spec:
                 }
             }
         }
-
-        stage('Security Scan') {
+        stage('Security Scan: pip-audit') {
             steps {
                 container('python') {
                     sh '''
-                    echo "Generate JSON report"
+                    echo "Generating JSON report:"
                     pip-audit -r requirements.txt -f json -o pip-audit-report.json
 
                     echo "Report:"
                     pip-audit -r requirements.txt
-                    
+
                     echo "Strict mode (fail on any vulnerability)"
                     pip-audit -r requirements.txt --strict
                     '''
@@ -66,7 +72,44 @@ spec:
                 
                 archiveArtifacts artifacts: 'pip-audit-report.json', fingerprint: true
 
+            }
+        }
+        stage('Security Scan: Bandit') {
+            steps {
+                container('python') {
+                    sh '''
+                    echo "Bandit scan:"
 
+                    bandit -r . \
+                    -f json \
+                    -o bandit-report.json
+
+                    echo "Readable output:"
+                    bandit -r .
+
+                    echo "Scan with high severity only:"
+                    bandit -r . -lll
+                    '''
+                }
+
+                archiveArtifacts artifacts: 'bandit-report.json', fingerprint: true
+            }
+        }
+        
+        stage('Security Scan: TruffleHog') {
+            steps {
+                container('trufflehog') {
+                    sh '''
+                    echo "TruffleHog scan:"
+
+                    trufflehog filesystem /repo \
+                    --only-verified \
+                    --exclude-paths=/repo/.trufflehogignore \
+                    --json > trufflehog-report.json
+                    '''
+                }
+
+                archiveArtifacts artifacts: 'trufflehog-report.json', fingerprint: true
             }
         }
         stage('Run Tests') {
