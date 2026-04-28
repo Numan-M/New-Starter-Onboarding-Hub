@@ -4,4 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 RUN pip install --no-cache-dir --upgrade pip wheel setuptools \
-    && pip install --no-cache-dir pytest pip-audit
+    && pip install --no-cache-dir \
+    pytest \
+    pip-audit \
+    bandit
