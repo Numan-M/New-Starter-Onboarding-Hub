@@ -73,12 +73,12 @@ spec:
                     sh "az aks get-credentials --resource-group ${RG_NAME} --name ${AKS_CLUSTER_NAME}"
 
                     sh """
-                    kubectl run db-migrate-${BUILD_NUMBER} \
-                    --rm -i --restart=Never \
-                    --image=${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
-                    --namespace nsoh-dev \
-                    --env DATABASE_URL=postgresql://appuser:apppass@postgres:5432/appdb \
-                    --env="SECRET_KEY=$(kubectl get secret app-secrets -n nsoh-dev -o jsonpath='{.data.SECRET_KEY}' | base64 --decode)" \
+                    kubectl run db-migrate-${BUILD_NUMBER} 
+                    --rm -i --restart=Never 
+                    --image=${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} 
+                    --namespace nsoh-dev 
+                    --env DATABASE_URL=postgresql://appuser:apppass@postgres:5432/appdb 
+                    --env="SECRET_KEY=$(kubectl get secret app-secrets -n nsoh-dev -o jsonpath='{.data.SECRET_KEY}' | base64 --decode)" 
                     --command -- flask db upgrade
                     """
                 }
