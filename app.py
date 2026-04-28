@@ -93,7 +93,7 @@ def login():
         if user and user.check_password(password):
             session['user_id'] = user.id
             session['is_admin'] = user.is_admin
-            return redirect(url_for('login'))
+            return redirect(url_for('home'))
         return render_template('login.html', error='Incorrect username or password.', username=username)
     return render_template('login.html')
 
