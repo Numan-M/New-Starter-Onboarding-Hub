@@ -62,11 +62,13 @@ spec:
             steps {
                 container('python') {
                     sh '''
+                    export SECRET_KEY=dev-test-key
                     pytest -q
                     '''
                 }
             }
         }
+
         stage('Log in to Azure') {
             steps {
                 container('azure-kubectl') {
