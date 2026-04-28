@@ -1,0 +1,6 @@
+.*\.pyc
+.*/__pycache__/.* 
+.*/venv/.*
+.*/\.git
+kubernetes/
+Jenkinsfile
