@@ -53,9 +53,20 @@ spec:
             steps {
                 container('python') {
                     sh '''
-                    pip-audit
+                    echo "Generate JSON report"
+                    pip-audit -r requirements.txt -f json -o pip-audit-report.json
+
+                    echo "Report:"
+                    pip-audit -r requirements.txt
+                    
+                    echo "Strict mode (fail on any vulnerability)"
+                    pip-audit -r requirements.txt --strict
                     '''
                 }
+                
+                archiveArtifacts artifacts: 'pip-audit-report.json', fingerprint: true
+
+
             }
         }
         stage('Run Tests') {
