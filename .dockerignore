@@ -8,4 +8,4 @@ Infrastructure/
 Dockerfile
 Jenkinsfile
 README.md
-test_app.py
+tests/
