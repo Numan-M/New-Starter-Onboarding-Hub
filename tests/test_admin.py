@@ -44,6 +44,39 @@ def test_admin_page_access_denied(client):
     # should redirect to home, not show admin content
     assert response.status_code == 200
     assert b'User management' not in response.data
+
+def test_admin_back_to_home(client):
+    # login as admin
+    client.post('/login', data={
+        'username': 'admin',
+        'password': 'adminpass'
+    })
+
+    # go to admin page first
+    client.get('/admin')
+
+    # simulate clicking "back" button
+    response = client.get('/', follow_redirects=True)
+
+    assert response.status_code == 200
+    assert b'Welcome' in response.data  # or another onboarding page check
+
+
+def test_admin_logout(client):
+    # login as admin
+    client.post('/login', data={
+        'username': 'admin',
+        'password': 'adminpass'
+    })
+
+    # ensure we're logged in by hitting admin
+    client.get('/admin')
+
+    # click logout
+    response = client.get('/logout', follow_redirects=True)
+
+    assert response.status_code == 200
+    assert b'Sign in' in response.data  # your login page text
     
 def test_create_user(client):
     client.post('/login', data={
