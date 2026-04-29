@@ -144,6 +144,8 @@ spec:
                     sh "az aks get-credentials --resource-group ${RG_NAME} --name ${AKS_CLUSTER_NAME}"
 
                     sh """
+                    set -e
+
                     SECRET_KEY=\$(kubectl get secret app-secrets -n nsoh-dev -o jsonpath='{.data.SECRET_KEY}' | base64 --decode)
 
                     kubectl run db-migrate-${BUILD_NUMBER} \
@@ -152,7 +154,10 @@ spec:
                     --namespace nsoh-dev \
                     --env DATABASE_URL=postgresql://appuser:apppass@postgres:5432/appdb \
                     --env SECRET_KEY=\$SECRET_KEY \
-                    --command -- flask db upgrade
+                    --command -- sh -c "
+                        flask db current || echo 'No migration state found, assuming new database.'
+                        flask db upgrade
+                    "
                     """
                 }
             }
