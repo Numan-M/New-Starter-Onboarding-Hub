@@ -100,9 +100,9 @@ spec:
                     sh '''
                     echo "TruffleHog scan:"
 
-                    trufflehog filesystem /repo \
+                    trufflehog filesystem . \
                     --only-verified \
-                    --exclude-paths=/repo/.trufflehogignore \
+                    --exclude-paths=.trufflehogignore \
                     --json > trufflehog-report.json
                     '''
                 }
