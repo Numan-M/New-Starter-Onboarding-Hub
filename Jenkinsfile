@@ -155,10 +155,12 @@ spec:
                     --env DATABASE_URL=postgresql://appuser:apppass@postgres:5432/appdb \
                     --env SECRET_KEY=\$SECRET_KEY \
                     --command -- sh -c "
-                        flask db current || echo 'No migration state found, assuming new database.'
+                        echo 'Migration state:'
+                        flask db current || echo 'No migration history detected'
+                        echo 'Migration validation:'
                         flask db upgrade
                     "
-                    """
+                    ""
                 }
             }
         }
