@@ -11,6 +11,7 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret")
 uri = os.environ.get("DATABASE_URL")
+app.config['FEATURE_ADMIN_ENABLED'] = os.getenv("FEATURE_ADMIN_ENABLED", "true").lower() == "true"
 
 if not uri:
     raise Exception("DATABASE_URL not set")
@@ -23,6 +24,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+print(f"feature_admin_enabled: {app.config['FEATURE_ADMIN_ENABLED']}")
 
 # ── Models ────────────────────────────────────────────────────────────────────
 class User(db.Model):
@@ -107,8 +109,10 @@ def logout():
 @app.route('/admin')
 @admin_required
 def admin():
-    users = db.session.query(User).order_by(User.created_at.desc()).all()
-    return render_template('admin.html', users=users)
+    if not app.config.get("FEATURE_ADMIN_ENABLED", True):
+        return redirect(url_for('home'))
+
+    return render_template('admin.html')
 
 
 @app.route('/admin/create', methods=['POST'])

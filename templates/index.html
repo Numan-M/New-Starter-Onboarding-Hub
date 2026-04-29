@@ -178,7 +178,7 @@
         {% endfor %}
     </ul>
     <!-- ADMIN (only shown to admins) -->
-    {% if session.get('is_admin') %}
+    {% if session.get('is_admin') and FEATURE_ADMIN_ENABLED %}
     <div class="logout" style="margin-top: 12px; padding-top: 12px; border-top: none;">
         <a href="{{ url_for('admin') }}">
             <img src="{{ url_for('static', filename='settings.png') }}" class="icon-settings">
