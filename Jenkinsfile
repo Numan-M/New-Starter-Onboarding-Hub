@@ -158,7 +158,7 @@ spec:
                         echo 'Migration state:'
                         flask db current || echo 'No migration history detected'
                         echo 'Migration validation:'
-                        flask db upgrade
+                        flask db upgrade"
                     """
                 }
             }
