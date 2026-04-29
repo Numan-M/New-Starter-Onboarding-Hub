@@ -80,15 +80,13 @@ spec:
                     sh '''
                     echo "Bandit scan:"
 
-                    bandit -r . \
-                    -f json \
-                    -o bandit-report.json
+                    bandit app.py -f json -o bandit-report.json
 
                     echo "Readable output:"
-                    bandit -r .
+                    bandit app.py
 
                     echo "Scan with high severity only:"
-                    bandit -r . -lll
+                    bandit app.py -lll
                     '''
                 }
 
