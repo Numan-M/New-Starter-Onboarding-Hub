@@ -2,10 +2,7 @@
 .*/__pycache__/.* 
 .*/venv/.*
 .*/\.git
-kubernetes/
 Jenkinsfile
-Infrastructure/
 migrations/
 static/
-Terraform/
 .pytest_cache/
