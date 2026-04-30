@@ -38,6 +38,8 @@ spec:
         IMAGE_NAME = "epa/nsoh"
         AKS_CLUSTER_NAME = "Jenkins-NM"
         IMAGE_TAG = "dev.${BUILD_NUMBER}"
+        FEATURE_ADMIN_ENABLED = "true"
+
     }
 
     stages {
@@ -154,6 +156,7 @@ spec:
                     --namespace nsoh-dev \
                     --env DATABASE_URL=postgresql://appuser:apppass@postgres:5432/appdb \
                     --env SECRET_KEY=\$SECRET_KEY \
+                    --env FEATURE_ADMIN_ENABLED=\$FEATURE_ADMIN_ENABLED \
                     --command -- sh -c "
                         echo 'Migration state:'
                         flask db current || echo 'No migration history detected'
@@ -169,6 +172,19 @@ spec:
                     sh "az aks get-credentials --resource-group ${RG_NAME} --name ${AKS_CLUSTER_NAME}"
                     sh "kubectl set image deployment/flask-app flask-app=${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -n nsoh-dev"  
                 }            
+            }
+        }
+        stage('Apply Feature Flags') {
+            steps {
+                container('azure-kubectl') {
+                    sh """
+                    az aks get-credentials --resource-group ${RG_NAME} --name ${AKS_CLUSTER_NAME}
+
+                    kubectl set env deployment/flask-app \
+                    FEATURE_ADMIN_ENABLED=${FEATURE_ADMIN_ENABLED} \
+                    -n nsoh-dev
+                    """
+                }
             }
         }
         
