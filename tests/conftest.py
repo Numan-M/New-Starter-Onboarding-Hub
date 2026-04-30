@@ -7,7 +7,8 @@ from app import User
 def app():
     app = create_app({
         "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"
+        FEATURE_ADMIN_ENABLED=True,,
         "WTF_CSRF_ENABLED": False,
     })
 
