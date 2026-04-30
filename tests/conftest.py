@@ -1,30 +1,37 @@
 import pytest
-from app import app, db, User, Completion
+from app import create_app, db
+from app import User
 
 
 @pytest.fixture
-def client():
-    app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-    app.config['WTF_CSRF_ENABLED'] = False
+def app():
+    app = create_app({
+        "TESTING": True,
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+        "WTF_CSRF_ENABLED": False,
+    })
 
-    with app.test_client() as client:
-        with app.app_context():
-            db.create_all()
+    with app.app_context():
+        db.create_all()
 
-            # create a default user
-            user = User(username="testuser", is_admin=False)
-            user.set_password("password")
-            db.session.add(user)
+        # seed users
+        user = User(username="testuser", is_admin=False)
+        user.set_password("password")
 
-            # admin user
-            admin = User(username="admin", is_admin=True)
-            admin.set_password("adminpass")
-            db.session.add(admin)
+        admin = User(username="admin", is_admin=True)
+        admin.set_password("adminpass")
 
-            db.session.commit()
+        db.session.add_all([user, admin])
+        db.session.commit()
 
-        yield client
+    yield app
 
-        with app.app_context():
-            db.drop_all()
+    # teardown (THIS ONLY AFFECTS SQLITE TEST DB)
+    with app.app_context():
+        db.session.remove()
+        db.drop_all()
+
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
