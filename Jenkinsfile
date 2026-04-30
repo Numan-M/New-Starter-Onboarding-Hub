@@ -38,7 +38,7 @@ spec:
         IMAGE_NAME = "epa/nsoh"
         AKS_CLUSTER_NAME = "Jenkins-NM"
         IMAGE_TAG = "dev.${BUILD_NUMBER}"
-        FEATURE_ADMIN_ENABLED = "true"
+        FEATURE_ADMIN_ENABLED = "false" // "true" or "false"
 
     }
 
