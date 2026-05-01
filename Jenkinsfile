@@ -61,12 +61,13 @@ spec:
             steps {
                 container('python') {
                     sh '''
-                    echo "Generating JSON report:"
-                    pip-audit -r requirements.txt -f json -o pip-audit-report.json
-
                     echo "Report:"
                     pip-audit -r requirements.txt
 
+                    echo "Generating JSON report:"
+                    pip-audit -r requirements.txt -f json -o pip-audit-report.json
+
+                    
                     echo "Strict mode (fail on any vulnerability)"
                     pip-audit -r requirements.txt --strict
                     '''
