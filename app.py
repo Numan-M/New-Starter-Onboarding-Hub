@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
+from azure.monitor.opentelemetry import configure_azure_monitor
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -67,13 +68,19 @@ def create_app(test_config=None):
     if uri.startswith("postgres://"):
         uri = uri.replace("postgres://", "postgresql://", 1)
 
-    # ✅ Testing override
     if test_config:
         app.config.update(test_config)
     else:
         app.config['SQLALCHEMY_DATABASE_URI'] = uri
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    # Azure Monitor config
+    connection_string = os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
+
+    if connection_string and not app.config.get("TESTING"):
+        configure_azure_monitor(connection_string=connection_string)
+        app.logger.info("Application Insights enabled")
 
     # Init extensions AFTER config
     db.init_app(app)
