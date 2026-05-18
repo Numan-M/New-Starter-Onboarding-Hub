@@ -4,7 +4,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = "nsoh-aks-cluster"
+  name                = "Jenkins-NM"
   location            = var.location
   resource_group_name = var.resource_group_name
   dns_prefix          = "nsoh-dev"
@@ -25,7 +25,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                = "nsohacr"
+  name                = "NumanEPA"
   resource_group_name = var.resource_group_name
   location            = var.location
   sku                 = "Basic"
