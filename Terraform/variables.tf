@@ -5,7 +5,7 @@ variable "location" {
 
 variable "resource_group_name" {
   type    = string
-  default = "nsoh-rg"
+  default = "NumanEPA"
 }
 
 variable "Subscription_id" {
