@@ -32,6 +32,7 @@ spec:
     }
     environment {
         AZURE_SUBSCRIPTION_ID = credentials('azure-subscription-id')
+        DEV_TEST_KEY = credentials('dev-test-key')
         REGISTRY = "numanepa.azurecr.io"
         ACR_NAME = "NumanEPA"
         RG_NAME = "NumanEPA"
@@ -117,7 +118,7 @@ spec:
             steps {
                 container('python') {
                     sh '''
-                    export SECRET_KEY=dev-test-key
+                    export SECRET_KEY=$DEV_TEST_KEY
                     export DATABASE_URL=sqlite:///:memory:
                     pytest -v
                     '''
