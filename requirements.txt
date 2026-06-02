@@ -65,7 +65,7 @@ pyasn1==0.6.3
 pyasn1_modules==0.4.2
 pycparser==3.0
 Pygments==2.20.0
-PyJWT==2.12.1
+# PyJWT==2.12.1
 pymssql==2.3.13
 pytest==9.0.3
 python-dotenv==1.2.2
